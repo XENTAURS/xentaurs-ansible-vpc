@@ -1,0 +1,22 @@
+---
+# vars file for xentaurs-ansible-vpc
+vpc_name: xentaurs-demo-vpc
+aws_vpc_cidr_block: 10.0.0.0/16
+aws_region: us-east-1
+resource_tags:
+  Owner: bcarpio
+  Terminate: True
+vpc_tenancy: default
+subnets:
+  10.0.1.0/24:
+    az: us-east-1a
+  10.0.2.0/24:
+    az: us-east-1a
+  10.0.3.0/24:
+    az: us-east-1b
+  10.0.4.0/24:
+    az: us-east-1b
+  10.0.5.0/24:
+    az: us-east-1c
+  10.0.6.0/24:
+    az: us-east-1c

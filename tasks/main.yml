@@ -1,0 +1,66 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Create VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ aws_vpc_cidr_block }}"
+    region: "{{ aws_region }}"
+    resource_tags: "{{ resource_tags }}"
+    tenancy: "{{ vpc_tenancy }}"
+  register: vpc
+
+- name: Create Subnets
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+    cidr: "{{ item.key }}"
+    az: "{{ item.value.az }}"
+    region: "{{ aws_region }}"
+    resource_tags: "{{ resource_tags }}"
+  with_dict: "{{ subnets }}"
+  register: vpc_subnets
+
+- name: Debug vpc_subnets
+  debug: msg="{{vpc_subnets.results[0].subnet.id}}"
+
+- name: Create new internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    state: present
+  register: igw
+
+- name: Create new nat gateway and allocate new EIP.
+  ec2_vpc_nat_gateway:
+    state: present
+    subnet_id: "{{ vpc_subnets.results[1].subnet.id }}"
+    wait: yes
+    if_exist_do_not_create: true
+    region: "{{ aws_region }}"
+  register: nat_gateway
+
+- name: Set up public subnet route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    subnets:
+      - "{{ vpc_subnets.results[0].subnet.id }}"
+      - "{{ vpc_subnets.results[2].subnet.id }}"
+      - "{{ vpc_subnets.results[4].subnet.id }}"
+    routes:
+      - dest:         "0.0.0.0/0"
+        gateway_id:   "{{ igw.gateway_id }}"
+    resource_tags: "{{ resource_tags }}"
+
+- name: Set up private subnet route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    subnets:
+      - "{{ vpc_subnets.results[1].subnet.id }}"
+      - "{{ vpc_subnets.results[3].subnet.id }}"
+      - "{{ vpc_subnets.results[5].subnet.id }}"
+    routes:
+      - dest:         "0.0.0.0/0"
+        gateway_id:   "{{ nat_gateway.nat_gateway_id }}"
+    resource_tags: "{{ resource_tags }}"
