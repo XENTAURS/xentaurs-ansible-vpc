@@ -1,0 +1,37 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Public Security Group
+  ec2_group:
+    description: Public SG
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: any
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: any
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: any
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+  register: pub_sg
+
+- name: Debug vpc_subnets
+ debug: msg="{{pub_sg}}"
+
+
+#- name: Private SG
+#  ec2_group:
+#    description: Private SG
+#    vpc_id: "{{ vpc.vpc.id }}"
+#    region: "{{ aws_region }}"
+#    rules:
+#      - proto: any
+#			  from_port: any
+#        to_port: any
+#        group_id:
+#
