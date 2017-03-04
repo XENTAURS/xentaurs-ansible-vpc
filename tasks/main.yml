@@ -5,3 +5,4 @@
 - include: igw.yml
 - include: ngw.yml
 - include: routes.yml
+- include: sgs.yml

@@ -3,35 +3,35 @@
 - name: Public Security Group
   ec2_group:
     description: Public SG
+    name: public
     vpc_id: "{{ vpc.vpc.id }}"
     region: "{{ aws_region }}"
     rules:
       - proto: tcp
-        from_port: any
+        from_port: 80
         to_port: 80
         cidr_ip: 0.0.0.0/0
       - proto: tcp
-        from_port: any
+        from_port: 443
         to_port: 443
         cidr_ip: 0.0.0.0/0
       - proto: tcp
-        from_port: any
+        from_port: 22
         to_port: 22
         cidr_ip: 0.0.0.0/0
   register: pub_sg
 
-- name: Debug vpc_subnets
- debug: msg="{{pub_sg}}"
+  #- name: Debug vpc_subnets
+  #debug: msg="{{ pub_sg }}"
 
 
-#- name: Private SG
-#  ec2_group:
-#    description: Private SG
-#    vpc_id: "{{ vpc.vpc.id }}"
-#    region: "{{ aws_region }}"
-#    rules:
-#      - proto: any
-#			  from_port: any
-#        to_port: any
-#        group_id:
-#
+- name: Private SG
+  ec2_group:
+    name: private
+    description: Private SG
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: all
+        group_id: "{{ pub_sg.group_id }}"
+  register: pri_sg
