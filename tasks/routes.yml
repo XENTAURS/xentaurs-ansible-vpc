@@ -1,0 +1,27 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Set up public subnet route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    subnets:
+      - "{{ vpc_subnets.results[0].subnet.id }}"
+      - "{{ vpc_subnets.results[2].subnet.id }}"
+      - "{{ vpc_subnets.results[4].subnet.id }}"
+    routes:
+      - dest:         "0.0.0.0/0"
+        gateway_id:   "{{ igw.gateway_id }}"
+    resource_tags: "{{ resource_tags }}"
+
+- name: Set up private subnet route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    subnets:
+      - "{{ vpc_subnets.results[1].subnet.id }}"
+      - "{{ vpc_subnets.results[3].subnet.id }}"
+      - "{{ vpc_subnets.results[5].subnet.id }}"
+    routes:
+      - dest:         "0.0.0.0/0"
+        gateway_id:   "{{ nat_gateway.nat_gateway_id }}"
+    resource_tags: "{{ resource_tags }}"

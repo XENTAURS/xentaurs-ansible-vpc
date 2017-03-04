@@ -1,0 +1,10 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Create VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ aws_vpc_cidr_block }}"
+    region: "{{ aws_region }}"
+    resource_tags: "{{ resource_tags }}"
+    tenancy: "{{ vpc_tenancy }}"
+  register: vpc

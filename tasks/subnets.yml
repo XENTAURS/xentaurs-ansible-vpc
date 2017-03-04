@@ -1,0 +1,16 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Create Subnets
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ vpc.vpc.id }}"
+    cidr: "{{ item.key }}"
+    az: "{{ item.value.az }}"
+    region: "{{ aws_region }}"
+    resource_tags: "{{ resource_tags }}"
+  with_dict: "{{ subnets }}"
+  register: vpc_subnets
+
+#- name: Debug vpc_subnets
+# debug: msg="{{vpc_subnets.results[0].subnet.id}}"
+

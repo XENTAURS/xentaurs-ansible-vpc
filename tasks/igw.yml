@@ -1,0 +1,8 @@
+---
+# tasks file for xentaurs-ansible-vpc
+- name: Create new internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    state: present
+  register: igw
