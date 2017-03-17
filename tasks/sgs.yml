@@ -19,19 +19,11 @@
         from_port: 22
         to_port: 22
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 1
+        to_port: 65535
+        cidr_ip: {{ aws_vpc_cidr_block }}
   register: pub_sg
 
   #- name: Debug vpc_subnets
   #debug: msg="{{ pub_sg }}"
-
-
-- name: Private SG
-  ec2_group:
-    name: private
-    description: Private SG
-    vpc_id: "{{ vpc.vpc.id }}"
-    region: "{{ aws_region }}"
-    rules:
-      - proto: all
-        group_id: "{{ pub_sg.group_id }}"
-  register: pri_sg

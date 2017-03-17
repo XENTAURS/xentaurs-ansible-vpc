@@ -3,6 +3,5 @@
 - include: vpc.yml
 - include: subnets.yml
 - include: igw.yml
-- include: ngw.yml
 - include: routes.yml
 - include: sgs.yml
